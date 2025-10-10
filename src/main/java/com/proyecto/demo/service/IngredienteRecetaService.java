@@ -19,9 +19,7 @@ public class IngredienteRecetaService {
     private final RecetaRepository recetaRepository;
     private final IngredienteRepository ingredienteRepository;
 
-    public IngredienteRecetaService(IngredienteRecetaRepository ingredienteRecetaRepository,
-                                    RecetaRepository recetaRepository,
-                                    IngredienteRepository ingredienteRepository) {
+    public IngredienteRecetaService(IngredienteRecetaRepository ingredienteRecetaRepository, RecetaRepository recetaRepository, IngredienteRepository ingredienteRepository) {
         this.ingredienteRecetaRepository = ingredienteRecetaRepository;
         this.recetaRepository = recetaRepository;
         this.ingredienteRepository = ingredienteRepository;
@@ -35,7 +33,7 @@ public class IngredienteRecetaService {
         Ingrediente ingrediente = ingredienteRepository.findById(idIngrediente)
                 .orElseThrow(() -> new EntityNotFoundException("Ingrediente no encontrado con ID: " + idIngrediente));
 
-        // ✅ Validar duplicado
+        // Validar duplicado
         if (ingredienteRecetaRepository.existsByRecetaIdAndIngredienteId(idReceta, idIngrediente)) {
             throw new IllegalArgumentException(
                     "El ingrediente '" + ingrediente.getNombre() + "' ya está asociado a la receta '" + receta.getNombre() + "'."

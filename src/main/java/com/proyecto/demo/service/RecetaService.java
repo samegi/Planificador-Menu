@@ -7,6 +7,9 @@ import com.proyecto.demo.repository.IngredienteRecetaRepository;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.Set;
+import java.util.HashSet;
 import java.util.List;
 
 @Service
@@ -27,9 +30,18 @@ public class RecetaService {
             throw new IllegalArgumentException("Ya existe una receta con el nombre: " + receta.getNombre());
         }
 
-        // Asegurar relaciones bidireccionales
+        // Validar que no se repitan ingredientes
         if (receta.getIngredientesReceta() != null) {
-            receta.getIngredientesReceta().forEach(ir -> ir.setReceta(receta));
+            Set<Long> ids = new HashSet<>();
+            for (IngredienteReceta ir : receta.getIngredientesReceta()) {
+                Long ingredienteId = ir.getIngrediente() != null ? ir.getIngrediente().getId() : null;
+                if (ingredienteId != null && !ids.add(ingredienteId)) {
+                    throw new IllegalArgumentException(
+                        "El ingrediente con ID " + ingredienteId + " está repetido en la receta."
+                    );
+                }
+                ir.setReceta(receta);
+            }
         }
 
         return recetaRepository.save(receta);
