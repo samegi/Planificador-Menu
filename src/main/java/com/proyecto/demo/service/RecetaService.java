@@ -1,77 +1,73 @@
 package com.proyecto.demo.service;
 
 import com.proyecto.demo.model.Receta;
-import com.proyecto.demo.model.NivelPicante;
+import com.proyecto.demo.model.IngredienteReceta;
 import com.proyecto.demo.repository.RecetaRepository;
+import com.proyecto.demo.repository.IngredienteRecetaRepository;
+import jakarta.persistence.EntityNotFoundException;
 import org.springframework.stereotype.Service;
-
+import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 
 @Service
+@Transactional
 public class RecetaService {
 
-    private final RecetaRepository repo;
+    private final RecetaRepository recetaRepository;
+    private final IngredienteRecetaRepository ingredienteRecetaRepository;
 
-    public RecetaService(RecetaRepository repo) {
-        this.repo = repo;
+    public RecetaService(RecetaRepository recetaRepository, IngredienteRecetaRepository ingredienteRecetaRepository) {
+        this.recetaRepository = recetaRepository;
+        this.ingredienteRecetaRepository = ingredienteRecetaRepository;
     }
 
-    // ✅ Validaciones de negocio
-    private void validate(Receta r) {
-        if (r.getNombre() == null || r.getNombre().isBlank()) {
-            throw new IllegalArgumentException("El nombre de la receta no puede estar vacío.");
+    // Crear receta con ingredientes asociados
+    public Receta crearReceta(Receta receta) {
+        if (recetaRepository.existsByNombreIgnoreCase(receta.getNombre())) {
+            throw new IllegalArgumentException("Ya existe una receta con el nombre: " + receta.getNombre());
         }
 
-        if (r.getNivelPicante() == null) {
-            throw new IllegalArgumentException(
-                "Debe indicar el nivel de picante (NULO, BAJO, MEDIO o ALTO)."
-            );
+        // Asegurar relaciones bidireccionales
+        if (receta.getIngredientesReceta() != null) {
+            receta.getIngredientesReceta().forEach(ir -> ir.setReceta(receta));
         }
 
-        // (Opcional) Validar que el valor de nivelPicante sea uno de los definidos
-        boolean valido = false;
-        for (NivelPicante nivel : NivelPicante.values()) {
-            if (nivel == r.getNivelPicante()) {
-                valido = true;
-                break;
-            }
+        return recetaRepository.save(receta);
+    }
+
+    // Listar todas
+    public List<Receta> listarRecetas() {
+        return recetaRepository.findAll();
+    }
+
+    // Obtener una receta
+    public Receta obtenerReceta(Long id) {
+        return recetaRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("Receta no encontrada con ID: " + id));
+    }
+
+    // Actualizar receta
+    public Receta actualizarReceta(Long id, Receta recetaActualizada) {
+        Receta receta = obtenerReceta(id);
+        receta.setNombre(recetaActualizada.getNombre());
+        receta.setDescripcion(recetaActualizada.getDescripcion());
+        receta.setNivelPicante(recetaActualizada.getNivelPicante());
+
+        // Actualizar ingredientes si vienen en el cuerpo
+        if (recetaActualizada.getIngredientesReceta() != null) {
+            receta.getIngredientesReceta().clear();
+            recetaActualizada.getIngredientesReceta().forEach(ir -> {
+                ir.setReceta(receta);
+                receta.getIngredientesReceta().add(ir);
+            });
         }
-        if (!valido) {
-            throw new IllegalArgumentException("Nivel de picante no válido.");
-        }
+
+        return recetaRepository.save(receta);
     }
 
-    public List<Receta> findAll() {
-        return repo.findAll();
-    }
-
-    public Receta findById(Long id) {
-        return repo.findById(id)
-                .orElseThrow(() -> new RuntimeException("Receta no encontrada con id: " + id));
-    }
-
-    public Receta create(Receta r) {
-        validate(r);
-
-        if (repo.existsByNombreIgnoreCase(r.getNombre())) {
-            throw new IllegalArgumentException("Ya existe una receta con ese nombre.");
-        }
-
-        return repo.save(r);
-    }
-
-    public Receta update(Long id, Receta data) {
-        Receta current = findById(id);
-        validate(data);
-
-        current.setNombre(data.getNombre());
-        current.setDescripcion(data.getDescripcion());
-        current.setNivelPicante(data.getNivelPicante());
-
-        return repo.save(current);
-    }
-
-    public void delete(Long id) {
-        repo.delete(findById(id));
+    // Eliminar receta y sus relaciones
+    public void eliminarReceta(Long id) {
+        Receta receta = obtenerReceta(id);
+        recetaRepository.delete(receta);
     }
 }

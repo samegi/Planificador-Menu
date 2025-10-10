@@ -1,5 +1,6 @@
 package com.proyecto.demo.model;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -11,16 +12,17 @@ public class IngredienteReceta {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    private Long id;  // ID propio de la relación
 
-    @ManyToOne(optional = false)
-    @JoinColumn(name = "id_receta")
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "id_receta", nullable = false)
+    @JsonBackReference  // evita recursión infinita cuando se serializa Receta → IngredienteReceta → Receta
     private Receta receta;
 
-    @ManyToOne(optional = false)
-    @JoinColumn(name = "id_ingrediente")
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "id_ingrediente", nullable = false)
     private Ingrediente ingrediente;
 
     @Column(nullable = false)
-    private double cantidad;
+    private float cantidad;
 }

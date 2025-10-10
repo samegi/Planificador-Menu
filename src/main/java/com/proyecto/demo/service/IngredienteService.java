@@ -2,70 +2,57 @@ package com.proyecto.demo.service;
 
 import com.proyecto.demo.model.Ingrediente;
 import com.proyecto.demo.repository.IngredienteRepository;
-import com.proyecto.demo.exception.ResourceNotFoundException;
+import jakarta.persistence.EntityNotFoundException;
 import org.springframework.stereotype.Service;
-
+import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 
 @Service
+@Transactional
 public class IngredienteService {
 
-    private final IngredienteRepository repo;
+    private final IngredienteRepository ingredienteRepository;
 
-    public IngredienteService(IngredienteRepository repo) {
-        this.repo = repo;
+    public IngredienteService(IngredienteRepository ingredienteRepository) {
+        this.ingredienteRepository = ingredienteRepository;
     }
 
-    // Validaciones de negocio
-    private void validate(Ingrediente i) {
-        if (i.getNombre() == null || i.getNombre().isBlank()) {
-            throw new IllegalArgumentException("El nombre del ingrediente no puede estar vacío");
+    // Crear nuevo ingrediente
+    public Ingrediente crearIngrediente(Ingrediente ingrediente) {
+        // Validar duplicados por nombre (opcional pero recomendable)
+        if (ingredienteRepository.existsByNombreIgnoreCase(ingrediente.getNombre())) {
+            throw new IllegalArgumentException("Ya existe un ingrediente con el nombre: " + ingrediente.getNombre());
         }
+        return ingredienteRepository.save(ingrediente);
     }
 
-    private void ensureNombreUniqueOnCreate(String nombre) {
-        if (repo.existsByNombreIgnoreCase(nombre)) {
-            throw new IllegalArgumentException("Ya existe un ingrediente con ese nombre");
+    // Obtener todos los ingredientes
+    public List<Ingrediente> listarIngredientes() {
+        return ingredienteRepository.findAll();
+    }
+
+    // Buscar un ingrediente por ID
+    public Ingrediente obtenerIngredientePorId(Long id) {
+        return ingredienteRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("Ingrediente no encontrado con ID: " + id));
+    }
+
+    // Actualizar ingrediente
+    public Ingrediente actualizarIngrediente(Long id, Ingrediente ingredienteActualizado) {
+        Ingrediente existente = obtenerIngredientePorId(id);
+        existente.setNombre(ingredienteActualizado.getNombre());
+        return ingredienteRepository.save(existente);
+    }
+
+    // Eliminar ingrediente y sus relaciones
+    public void eliminarIngrediente(Long id) {
+        Ingrediente ingrediente = obtenerIngredientePorId(id);
+
+        // Si hay relaciones con recetas, se eliminan por cascada
+        if (ingrediente.getRecetas() != null) {
+            ingrediente.getRecetas().clear();
         }
-    }
 
-    private void ensureNombreUniqueOnUpdate(Long id, String nombre) {
-        if (repo.existsByNombreIgnoreCaseAndIdNot(nombre, id)) {
-            throw new IllegalArgumentException("Ya existe otro ingrediente con ese nombre");
-        }
-    }
-
-    // CRUD
-    public Ingrediente create(Ingrediente i) {
-        validate(i);
-        ensureNombreUniqueOnCreate(i.getNombre());
-        return repo.save(i);
-    }
-
-    public List<Ingrediente> findAll() {
-        return repo.findAll();
-    }
-
-    public Ingrediente findById(Long id) {
-        return repo.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Ingrediente no encontrado con id: " + id));
-    }
-
-    public Ingrediente findByNombre(String nombre) {
-        return repo.findByNombreIgnoreCase(nombre)
-                .orElseThrow(() -> new ResourceNotFoundException("Ingrediente no encontrado con nombre: " + nombre));
-    }
-
-    public Ingrediente update(Long id, Ingrediente data) {
-        Ingrediente current = findById(id);
-        validate(data);
-        ensureNombreUniqueOnUpdate(id, data.getNombre());
-        current.setNombre(data.getNombre());
-        return repo.save(current);
-    }
-
-    public void delete(Long id) {
-        Ingrediente current = findById(id);
-        repo.delete(current);
+        ingredienteRepository.delete(ingrediente);
     }
 }

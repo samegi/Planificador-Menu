@@ -3,7 +3,9 @@ package com.proyecto.demo.model;
 import jakarta.persistence.*;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-
+import lombok.ToString;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
+import java.util.ArrayList;
 import java.util.List;
 
 @Entity
@@ -21,11 +23,26 @@ public class Receta {
     @Column(length = 500)
     private String descripcion;
 
-    // Puede ser nulo (la validación la hace el servicio)
     @Enumerated(EnumType.STRING)
     @Column(length = 10)
     private NivelPicante nivelPicante;
 
     @OneToMany(mappedBy = "receta", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<IngredienteReceta> ingredientesReceta;
+    @JsonManagedReference
+    @ToString.Exclude
+    private List<IngredienteReceta> ingredientesReceta = new ArrayList<>();
+
+    // Agregar ingrediente a la receta
+    public void addIngrediente(Ingrediente ingrediente, float cantidad) {
+        IngredienteReceta ir = new IngredienteReceta();
+        ir.setReceta(this);
+        ir.setIngrediente(ingrediente);
+        ir.setCantidad(cantidad);
+        ingredientesReceta.add(ir);
+    }
+
+    // Eliminar ingrediente
+    public void removeIngrediente(Ingrediente ingrediente) {
+        ingredientesReceta.removeIf(ir -> ir.getIngrediente().equals(ingrediente));
+    }
 }
