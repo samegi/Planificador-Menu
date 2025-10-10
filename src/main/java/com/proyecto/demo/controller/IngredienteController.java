@@ -5,54 +5,51 @@ import com.proyecto.demo.service.IngredienteService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.net.URI;
 import java.util.List;
 
 @RestController
 @RequestMapping("/api/ingredientes")
+@CrossOrigin(origins = "*")
 public class IngredienteController {
 
-    private final IngredienteService service;
+    private final IngredienteService ingredienteService;
 
-    public IngredienteController(IngredienteService service) {
-        this.service = service;
+    public IngredienteController(IngredienteService ingredienteService) {
+        this.ingredienteService = ingredienteService;
     }
 
-    // GET: listar todos
-    @GetMapping
-    public List<Ingrediente> getAll() {
-        return service.findAll();
-    }
-
-    // GET: por id
-    @GetMapping("/{id}")
-    public Ingrediente getById(@PathVariable Long id) {
-        return service.findById(id);
-    }
-
-    // GET: por nombre ?nombre=Azucar
-    @GetMapping("/search")
-    public Ingrediente getByNombre(@RequestParam String nombre) {
-        return service.findByNombre(nombre);
-    }
-
-    // POST: crear
+    // Crear nuevo ingrediente
     @PostMapping
-    public ResponseEntity<Ingrediente> create(@RequestBody Ingrediente body) {
-        Ingrediente created = service.create(body);
-        return ResponseEntity.created(URI.create("/api/ingredientes/" + created.getId())).body(created);
+    public ResponseEntity<Ingrediente> crearIngrediente(@RequestBody Ingrediente ingrediente) {
+        Ingrediente nuevo = ingredienteService.crearIngrediente(ingrediente);
+        return ResponseEntity.ok(nuevo);
     }
 
-    // PUT: actualizar
+    // Listar todos los ingredientes
+    @GetMapping
+    public ResponseEntity<List<Ingrediente>> listarIngredientes() {
+        return ResponseEntity.ok(ingredienteService.listarIngredientes());
+    }
+
+    // Obtener ingrediente por ID
+    @GetMapping("/{id}")
+    public ResponseEntity<Ingrediente> obtenerIngrediente(@PathVariable Long id) {
+        return ResponseEntity.ok(ingredienteService.obtenerIngredientePorId(id));
+    }
+
+    // Actualizar ingrediente
     @PutMapping("/{id}")
-    public Ingrediente update(@PathVariable Long id, @RequestBody Ingrediente body) {
-        return service.update(id, body);
+    public ResponseEntity<Ingrediente> actualizarIngrediente(
+            @PathVariable Long id,
+            @RequestBody Ingrediente ingrediente) {
+        Ingrediente actualizado = ingredienteService.actualizarIngrediente(id, ingrediente);
+        return ResponseEntity.ok(actualizado);
     }
 
-    // DELETE: eliminar
+    // Eliminar ingrediente
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> delete(@PathVariable Long id) {
-        service.delete(id);
+    public ResponseEntity<Void> eliminarIngrediente(@PathVariable Long id) {
+        ingredienteService.eliminarIngrediente(id);
         return ResponseEntity.noContent().build();
     }
 }

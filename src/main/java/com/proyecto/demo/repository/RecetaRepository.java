@@ -1,10 +1,10 @@
 package com.proyecto.demo.repository;
 
-import com.proyecto.demo.model.Ingrediente;
+import com.proyecto.demo.model.Receta;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
 @Repository
-public interface IngredienteRepository extends JpaRepository<Ingrediente, Long> {
+public interface RecetaRepository extends JpaRepository<Receta, Long> {
     boolean existsByNombreIgnoreCase(String nombre);
 }
