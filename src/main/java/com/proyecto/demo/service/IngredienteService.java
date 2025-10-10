@@ -60,7 +60,6 @@ public class IngredienteService {
         Ingrediente current = findById(id);
         validate(data);
         ensureNombreUniqueOnUpdate(id, data.getNombre());
-
         current.setNombre(data.getNombre());
         return repo.save(current);
     }
