@@ -21,9 +21,6 @@ public class IngredienteService {
         if (i.getNombre() == null || i.getNombre().isBlank()) {
             throw new IllegalArgumentException("El nombre del ingrediente no puede estar vacío");
         }
-        if (i.getPrecio() < 0) {
-            throw new IllegalArgumentException("El precio no puede ser negativo");
-        }
     }
 
     private void ensureNombreUniqueOnCreate(String nombre) {
@@ -65,7 +62,6 @@ public class IngredienteService {
         ensureNombreUniqueOnUpdate(id, data.getNombre());
 
         current.setNombre(data.getNombre());
-        current.setPrecio(data.getPrecio());
         return repo.save(current);
     }
 

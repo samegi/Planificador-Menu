@@ -13,8 +13,6 @@ public class Ingrediente {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(nullable = false, length = 100)
+    @Column(nullable = false, length = 100) // Nombre del ingrediente no puede ser nulo, ni exceder 100 caracteres
     private String nombre;
-
-    private double precio;
 }

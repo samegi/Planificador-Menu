@@ -1,4 +1,4 @@
-package com.proyecto.demo.web;
+package com.proyecto.demo.controller;
 
 import com.proyecto.demo.model.Ingrediente;
 import com.proyecto.demo.service.IngredienteService;
