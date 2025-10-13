@@ -25,7 +25,7 @@ public class Receta {
 
     @Enumerated(EnumType.STRING)
     @Column(length = 10)
-    private NivelPicante nivelPicante;
+    private Macronutriente macronutriente;
 
     @OneToMany(mappedBy = "receta", cascade = CascadeType.ALL, orphanRemoval = true)
     @JsonManagedReference
