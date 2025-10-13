@@ -63,7 +63,7 @@ public class RecetaService {
         Receta receta = obtenerReceta(id);
         receta.setNombre(recetaActualizada.getNombre());
         receta.setDescripcion(recetaActualizada.getDescripcion());
-        receta.setNivelPicante(recetaActualizada.getNivelPicante());
+        receta.setMacronutriente(recetaActualizada.getMacronutriente());
 
         // Actualizar ingredientes si vienen en el cuerpo
         if (recetaActualizada.getIngredientesReceta() != null) {

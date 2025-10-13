@@ -2,7 +2,7 @@ package com.proyecto.demo.service;
 
 import com.proyecto.demo.model.Receta;
 import com.proyecto.demo.model.IngredienteReceta;
-import com.proyecto.demo.model.NivelPicante;
+import com.proyecto.demo.model.Macronutriente;
 import com.proyecto.demo.repository.RecetaRepository;
 import com.proyecto.demo.repository.IngredienteRecetaRepository;
 import jakarta.persistence.EntityNotFoundException;
@@ -43,7 +43,7 @@ class RecetaServiceTest {
         receta.setId(1L);
         receta.setNombre("Arroz con Pollo");
         receta.setDescripcion("Receta tradicional colombiana");
-        receta.setNivelPicante(NivelPicante.BAJO);
+        receta.setMacronutriente(Macronutriente.CARBOHIDRATO);
         receta.setIngredientesReceta(new ArrayList<>());
 
         ingredienteReceta1 = new IngredienteReceta();
@@ -63,8 +63,8 @@ class RecetaServiceTest {
 
         recetaActualizada = new Receta();
         recetaActualizada.setNombre("Arroz Criollo");
-        recetaActualizada.setDescripcion("Versión con más vegetales");
-        recetaActualizada.setNivelPicante(NivelPicante.MEDIO);
+        recetaActualizada.setDescripcion("Versión con más vegetales, sin alergenos");
+        recetaActualizada.setMacronutriente(Macronutriente.CARBOHIDRATO);
         recetaActualizada.setIngredientesReceta(new ArrayList<>());
     }
 
@@ -159,7 +159,7 @@ class RecetaServiceTest {
         Receta resultado = recetaService.actualizarReceta(1L, recetaActualizada);
 
         assertEquals("Arroz Criollo", resultado.getNombre());
-        assertEquals(NivelPicante.MEDIO, resultado.getNivelPicante());
+        assertEquals(Macronutriente.PROTEINA, resultado.getMacronutriente());
         assertEquals(1, resultado.getIngredientesReceta().size());
     }
 
