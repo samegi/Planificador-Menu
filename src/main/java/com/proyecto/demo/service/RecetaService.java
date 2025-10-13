@@ -1,16 +1,19 @@
+// src/main/java/com/proyecto/demo/service/RecetaService.java
 package com.proyecto.demo.service;
 
-import com.proyecto.demo.model.Receta;
-import com.proyecto.demo.model.IngredienteReceta;
-import com.proyecto.demo.repository.RecetaRepository;
-import com.proyecto.demo.repository.IngredienteRecetaRepository;
-import jakarta.persistence.EntityNotFoundException;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.Set;
-import java.util.HashSet;
-import java.util.List;
+import com.proyecto.demo.model.IngredienteReceta;
+import com.proyecto.demo.model.Receta;
+import com.proyecto.demo.repository.IngredienteRecetaRepository;
+import com.proyecto.demo.repository.RecetaRepository;
+
+import jakarta.persistence.EntityNotFoundException;
 
 @Service
 @Transactional
@@ -24,13 +27,10 @@ public class RecetaService {
         this.ingredienteRecetaRepository = ingredienteRecetaRepository;
     }
 
-    // Crear receta con ingredientes asociados
     public Receta crearReceta(Receta receta) {
         if (recetaRepository.existsByNombreIgnoreCase(receta.getNombre())) {
             throw new IllegalArgumentException("Ya existe una receta con el nombre: " + receta.getNombre());
         }
-
-        // Validar que no se repitan ingredientes
         if (receta.getIngredientesReceta() != null) {
             Set<Long> ids = new HashSet<>();
             for (IngredienteReceta ir : receta.getIngredientesReceta()) {
@@ -43,41 +43,39 @@ public class RecetaService {
                 ir.setReceta(receta);
             }
         }
-
         return recetaRepository.save(receta);
     }
 
-    // Listar todas
     public List<Receta> listarRecetas() {
         return recetaRepository.findAll();
     }
 
-    // Obtener una receta
     public Receta obtenerReceta(Long id) {
         return recetaRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("Receta no encontrada con ID: " + id));
     }
 
-    // Actualizar receta
-    public Receta actualizarReceta(Long id, Receta recetaActualizada) {
-        Receta receta = obtenerReceta(id);
-        receta.setNombre(recetaActualizada.getNombre());
-        receta.setDescripcion(recetaActualizada.getDescripcion());
+   // RecetaService.java
+public Receta actualizarReceta(Long id, Receta recetaActualizada) {
+    Receta receta = obtenerReceta(id);
+    receta.setNombre(recetaActualizada.getNombre());
+    receta.setDescripcion(recetaActualizada.getDescripcion());
+
+    // NO pises con null
+    if (recetaActualizada.getMacronutriente() != null) {
         receta.setMacronutriente(recetaActualizada.getMacronutriente());
-
-        // Actualizar ingredientes si vienen en el cuerpo
-        if (recetaActualizada.getIngredientesReceta() != null) {
-            receta.getIngredientesReceta().clear();
-            recetaActualizada.getIngredientesReceta().forEach(ir -> {
-                ir.setReceta(receta);
-                receta.getIngredientesReceta().add(ir);
-            });
-        }
-
-        return recetaRepository.save(receta);
     }
 
-    // Eliminar receta y sus relaciones
+    if (recetaActualizada.getIngredientesReceta() != null) {
+        receta.getIngredientesReceta().clear();
+        recetaActualizada.getIngredientesReceta().forEach(ir -> {
+            ir.setReceta(receta);
+            receta.getIngredientesReceta().add(ir);
+        });
+    }
+    return recetaRepository.save(receta);
+}
+
     public void eliminarReceta(Long id) {
         Receta receta = obtenerReceta(id);
         recetaRepository.delete(receta);
