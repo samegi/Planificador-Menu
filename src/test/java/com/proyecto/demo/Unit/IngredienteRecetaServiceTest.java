@@ -1,4 +1,4 @@
-package com.proyecto.demo.service;
+package com.proyecto.demo.Unit;
 
 import com.proyecto.demo.model.Ingrediente;
 import com.proyecto.demo.model.IngredienteReceta;
@@ -6,6 +6,8 @@ import com.proyecto.demo.model.Receta;
 import com.proyecto.demo.repository.IngredienteRecetaRepository;
 import com.proyecto.demo.repository.IngredienteRepository;
 import com.proyecto.demo.repository.RecetaRepository;
+import com.proyecto.demo.service.IngredienteRecetaService;
+
 import jakarta.persistence.EntityNotFoundException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;

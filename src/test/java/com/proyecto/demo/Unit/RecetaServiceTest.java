@@ -1,9 +1,10 @@
-package com.proyecto.demo.service;
+package com.proyecto.demo.Unit;
 
 import com.proyecto.demo.model.Receta;
 import com.proyecto.demo.model.IngredienteReceta;
 import com.proyecto.demo.model.Macronutriente;
 import com.proyecto.demo.repository.RecetaRepository;
+import com.proyecto.demo.service.RecetaService;
 import com.proyecto.demo.repository.IngredienteRecetaRepository;
 import jakarta.persistence.EntityNotFoundException;
 import org.junit.jupiter.api.BeforeEach;

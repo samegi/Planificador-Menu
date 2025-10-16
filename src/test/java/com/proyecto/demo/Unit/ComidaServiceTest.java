@@ -1,9 +1,11 @@
-package com.proyecto.demo.service;
+package com.proyecto.demo.Unit;
 
 import com.proyecto.demo.model.Comida;
 import com.proyecto.demo.model.Receta;
 import com.proyecto.demo.repository.ComidaRepository;
 import com.proyecto.demo.repository.RecetaRepository;
+import com.proyecto.demo.service.ComidaService;
+
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
