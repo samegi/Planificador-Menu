@@ -1,4 +1,4 @@
-package com.proyecto.demo.service;
+package com.proyecto.demo.Unit;
 
 import java.time.LocalDate;
 import java.util.Optional;
@@ -13,6 +13,7 @@ import static org.mockito.Mockito.when;
 import org.mockito.MockitoAnnotations;
 
 import com.proyecto.demo.model.Dia;
+import com.proyecto.demo.service.DiaService;
 import com.proyecto.demo.repository.ComidaRepository;
 import com.proyecto.demo.repository.DiaRepository;
 import com.proyecto.demo.repository.RecetaRepository;
