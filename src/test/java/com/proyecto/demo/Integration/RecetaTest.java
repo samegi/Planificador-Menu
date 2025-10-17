@@ -2,11 +2,13 @@ package com.proyecto.demo.Integration;
 
 import com.proyecto.demo.model.Receta;
 import com.proyecto.demo.model.Macronutriente;
+import com.proyecto.demo.service.RecetaService;
 import com.proyecto.demo.repository.RecetaRepository;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Optional;
 
@@ -14,13 +16,16 @@ import static org.junit.jupiter.api.Assertions.*;
 
 @SpringBootTest
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
-
+@Transactional
 public class RecetaTest {
+
+    @Autowired
+    private RecetaService recetaService;
 
     @Autowired
     private RecetaRepository recetaRepository;
 
-    //Crear receta y verificar persistencia
+    // Crear receta y verificar persistencia
     @Test
     void testCrearReceta_DeberiaPersistirEnBaseDeDatos() {
         // Arrange
@@ -30,39 +35,44 @@ public class RecetaTest {
         receta.setMacronutriente(Macronutriente.PROTEINA);
 
         // Act
-        Receta guardada = recetaRepository.save(receta);
-        Optional<Receta> encontrada = recetaRepository.findById(guardada.getId());
+        recetaService.crearReceta(receta);
 
         // Assert
+        Optional<Receta> encontrada = recetaRepository.findById(receta.getId());
         assertTrue(encontrada.isPresent(), "La receta debería haberse guardado en la base de datos");
         assertEquals("Ensalada de Quinoa", encontrada.get().getNombre());
     }
 
-    //Actualizar receta y verificar cambios
+    // Actualizar receta y verificar cambios
+    // Actualizar receta y verificar cambios (cambia descripción y macronutriente)
     @Test
     void testActualizarReceta_DeberiaGuardarCambiosEnBaseDeDatos() {
         // Arrange
-        Receta receta = new Receta();
-        receta.setNombre("Tortilla de Espinaca");
-        receta.setDescripcion("Receta original.");
-        receta.setMacronutriente(Macronutriente.GRASA);
-        Receta guardada = recetaRepository.save(receta);
+        Receta base = new Receta();
+        base.setNombre("Tortilla de Espinaca");
+        base.setDescripcion("Receta original.");
+        base.setMacronutriente(Macronutriente.GRASA);
+        recetaService.crearReceta(base);
+
+        // Construyo el objeto "recetaActualizada" (lo que llega por API/servicio)
+        Receta cambios = new Receta();
+        cambios.setNombre("Tortilla de Espinaca (light)");
+        cambios.setDescripcion("Tortilla de espinaca con queso bajo en grasa.");
+        cambios.setMacronutriente(Macronutriente.PROTEINA); // debe actualizarse
 
         // Act
-        guardada.setDescripcion("Tortilla de espinaca con queso bajo en grasa.");
-        guardada.setMacronutriente(Macronutriente.PROTEINA);
-        recetaRepository.save(guardada);
+        Receta result = recetaService.actualizarReceta(base.getId(), cambios);
 
-        Optional<Receta> actualizada = recetaRepository.findById(guardada.getId());
-
-        // Assert
+        // Assert (releo desde BD para no depender del objeto en memoria)
+        Optional<Receta> actualizada = recetaRepository.findById(base.getId());
         assertTrue(actualizada.isPresent(), "La receta actualizada debería existir en la base de datos");
+        assertEquals("Tortilla de Espinaca (light)", actualizada.get().getNombre());
         assertEquals("Tortilla de espinaca con queso bajo en grasa.", actualizada.get().getDescripcion());
         assertEquals(Macronutriente.PROTEINA, actualizada.get().getMacronutriente());
     }
 
-    //Eliminar receta y verificar eliminación
-    
+
+    // Eliminar receta y verificar eliminación
     @Test
     void testEliminarReceta_DeberiaRemoverDeBaseDeDatos() {
         // Arrange
@@ -70,15 +80,15 @@ public class RecetaTest {
         receta.setNombre("Smoothie Verde");
         receta.setDescripcion("Smoothie con espinaca, manzana y jengibre.");
         receta.setMacronutriente(Macronutriente.CARBOHIDRATO);
-        Receta guardada = recetaRepository.save(receta);
+        recetaService.crearReceta(receta);
 
-        Long id = guardada.getId();
+        Long id = receta.getId();
 
         // Act
-        recetaRepository.deleteById(id);
-        Optional<Receta> eliminada = recetaRepository.findById(id);
+        recetaService.eliminarReceta(id);
 
         // Assert
+        Optional<Receta> eliminada = recetaRepository.findById(id);
         assertFalse(eliminada.isPresent(), "La receta debería haber sido eliminada de la base de datos");
     }
 }

@@ -56,25 +56,25 @@ public class RecetaService {
     }
 
    // RecetaService.java
-public Receta actualizarReceta(Long id, Receta recetaActualizada) {
-    Receta receta = obtenerReceta(id);
-    receta.setNombre(recetaActualizada.getNombre());
-    receta.setDescripcion(recetaActualizada.getDescripcion());
+    public Receta actualizarReceta(Long id, Receta recetaActualizada) {
+        Receta receta = obtenerReceta(id);
+        receta.setNombre(recetaActualizada.getNombre());
+        receta.setDescripcion(recetaActualizada.getDescripcion());
 
-    // NO pises con null
-    if (recetaActualizada.getMacronutriente() != null) {
-        receta.setMacronutriente(recetaActualizada.getMacronutriente());
-    }
+        // NO pises con null
+        if (recetaActualizada.getMacronutriente() != null) {
+            receta.setMacronutriente(recetaActualizada.getMacronutriente());
+        }
 
-    if (recetaActualizada.getIngredientesReceta() != null) {
-        receta.getIngredientesReceta().clear();
-        recetaActualizada.getIngredientesReceta().forEach(ir -> {
-            ir.setReceta(receta);
-            receta.getIngredientesReceta().add(ir);
-        });
+        if (recetaActualizada.getIngredientesReceta() != null) {
+            receta.getIngredientesReceta().clear();
+            recetaActualizada.getIngredientesReceta().forEach(ir -> {
+                ir.setReceta(receta);
+                receta.getIngredientesReceta().add(ir);
+            });
+        }
+        return recetaRepository.save(receta);
     }
-    return recetaRepository.save(receta);
-}
 
     public void eliminarReceta(Long id) {
         Receta receta = obtenerReceta(id);
