@@ -143,15 +143,10 @@ POST http://localhost:8080/api/dias/{diaId}/comidas/{recetaId}
 
 ---
 
-## Pruebas de integración
-
-Ejecuta todas las pruebas con:
-```bash
-mvn test
-```
+## Pruebas
 Cada clase tiene su prueba unitaria correspondiente
 
-Las pruebas de inetgracion verifican:
+Las pruebas de integracion verifican:
 - Persistencia en base de datos  
 - Actualización y eliminación de entidades  
 - Relaciones entre recetas, comidas y días  
