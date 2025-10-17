@@ -5,13 +5,11 @@ import com.proyecto.demo.model.Dia;
 import com.proyecto.demo.model.Receta;
 import com.proyecto.demo.model.Macronutriente;
 import com.proyecto.demo.service.DiaService;
-
-import jakarta.transaction.Transactional;
-
 import com.proyecto.demo.repository.DiaRepository;
 import com.proyecto.demo.repository.RecetaRepository;
 import com.proyecto.demo.repository.ComidaRepository;
 
+import jakarta.transaction.Transactional;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
@@ -41,7 +39,7 @@ public class DiaTest {
     @Autowired
     private ComidaRepository comidaRepository;
 
-    //Crear día y verificar persistencia
+    // Crear día y verificar persistencia
     @Test
     void testCrearDia_DeberiaPersistirEnBaseDeDatos() {
         // Arrange
@@ -54,9 +52,10 @@ public class DiaTest {
         // Assert
         Optional<Dia> encontrado = diaRepository.findById(guardado.getId());
         assertTrue(encontrado.isPresent(), "El día debería haberse guardado en la base de datos");
+        assertEquals(LocalDate.of(2025, 10, 16), encontrado.get().getFecha(), "La fecha no coincide");
     }
 
-    //Actualizar día y verificar cambios
+    // Actualizar día y verificar cambios
     @Test
     void testActualizarDia_DeberiaGuardarCambiosEnBaseDeDatos() {
         // Arrange
@@ -75,7 +74,7 @@ public class DiaTest {
         assertEquals(LocalDate.of(2025, 10, 17), actualizado.getFecha(), "La fecha del día no se actualizó correctamente");
     }
 
-    //Eliminar día y verificar eliminación
+    // Eliminar día y verificar eliminación
     @Test
     void testEliminarDia_DeberiaRemoverDeBaseDeDatos() {
         // Arrange
@@ -92,7 +91,7 @@ public class DiaTest {
         assertFalse(eliminado.isPresent(), "El día debería haber sido eliminado de la base de datos");
     }
 
-    //Agregar comida a un día y verificar relación con receta
+    // Agregar comida a un día y verificar relación con receta
     @Test
     void testAgregarComidaADia_DeberiaCrearRelacionCorrectamente() {
         // Arrange
@@ -116,5 +115,6 @@ public class DiaTest {
 
         List<Comida> comidasDelDia = diaService.listarComidasDeDia(dia.getId());
         assertEquals(1, comidasDelDia.size(), "El día debería tener exactamente una comida asociada");
+        assertEquals("Tostadas con aguacate", comidasDelDia.get(0).getReceta().getNombre(), "El nombre de la receta no coincide");
     }
 }
