@@ -156,7 +156,6 @@ Cada test usa `@SpringBootTest` y `@Transactional`, lo que asegura que los datos
 ---
 ## Autores
 Catalina Ospina, Federico Alarcón, Sara Mejia y Sara Muñoz
-
-Desarrollado por OsMe  
+  
 Proyecto académico - Universidad Javeriana 
 2025
