@@ -61,7 +61,7 @@ public class ComidaService {
         }
     }
 
-    // (Opcional) Obtener comidas por receta
+    // Obtener comidas por receta
     public List<Comida> obtenerPorReceta(Long recetaId) {
         return comidaRepository.findByRecetaId(recetaId);
     }

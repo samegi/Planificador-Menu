@@ -62,6 +62,7 @@ public class RecetaTest {
     }
 
     //Eliminar receta y verificar eliminación
+    
     @Test
     void testEliminarReceta_DeberiaRemoverDeBaseDeDatos() {
         // Arrange

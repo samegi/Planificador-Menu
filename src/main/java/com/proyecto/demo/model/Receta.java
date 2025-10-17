@@ -33,9 +33,9 @@ public class Receta {
     @Column(length = 500)
     private String descripcion;
 
-@Enumerated(EnumType.STRING)
-@Column(nullable = false)
-private Macronutriente macronutriente;
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private Macronutriente macronutriente;
 
     @OneToMany(mappedBy = "receta", cascade = CascadeType.ALL, orphanRemoval = true)
     @JsonManagedReference
@@ -52,9 +52,9 @@ private Macronutriente macronutriente;
     }
 
     @OneToMany(mappedBy = "receta", cascade = CascadeType.ALL, orphanRemoval = true)
-@JsonManagedReference(value = "receta-comidas")
-@ToString.Exclude
-private List<Comida> comidas = new ArrayList<>();
+    @JsonManagedReference(value = "receta-comidas")
+    @ToString.Exclude
+    private List<Comida> comidas = new ArrayList<>();
 
     // Eliminar ingrediente
     public void removeIngrediente(Ingrediente ingrediente) {
