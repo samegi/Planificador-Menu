@@ -6,11 +6,14 @@ import com.proyecto.demo.model.Receta;
 import com.proyecto.demo.repository.RecetaRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
 
 import java.util.List;
 import java.util.Optional;
 
 @Service
+@Transactional
 public class ComidaService {
 
     @Autowired
@@ -58,7 +61,7 @@ public class ComidaService {
         }
     }
 
-    // (Opcional) Obtener comidas por receta
+    // Obtener comidas por receta
     public List<Comida> obtenerPorReceta(Long recetaId) {
         return comidaRepository.findByRecetaId(recetaId);
     }

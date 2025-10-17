@@ -1,11 +1,20 @@
 package com.proyecto.demo.model;
 
-import jakarta.persistence.*;
+import java.time.LocalTime;
+
+import com.fasterxml.jackson.annotation.JsonBackReference;   // <-- OK
+
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
-import com.fasterxml.jackson.annotation.JsonBackReference;
-import java.time.LocalTime;
 
 @Entity
 @Data
@@ -16,15 +25,21 @@ public class Comida {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    // Hora del día (por ejemplo: 07:30, 12:00, 18:45)
     @Column(nullable = false)
     private LocalTime hora;
 
-    // Relación muchos a uno con Receta
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "receta_id", nullable = false)
-    @JsonBackReference
-    @ToString.Exclude
-    private Receta receta;
+    // Día al que pertenece esta comida
+@ManyToOne(fetch = FetchType.LAZY)
+@JoinColumn(name = "dia_id")
+@JsonBackReference(value = "dia-comidas")
+@ToString.Exclude
+private Dia dia;
+
+// Relación muchos a uno con Receta
+@ManyToOne(fetch = FetchType.LAZY)
+@JoinColumn(name = "receta_id", nullable = false)
+@JsonBackReference(value = "receta-comidas")
+@ToString.Exclude
+private Receta receta;
 
 }

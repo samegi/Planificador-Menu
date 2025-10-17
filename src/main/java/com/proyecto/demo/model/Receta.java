@@ -1,12 +1,22 @@
 package com.proyecto.demo.model;
 
-import jakarta.persistence.*;
+import java.util.ArrayList;
+import java.util.List;
+
+import com.fasterxml.jackson.annotation.JsonManagedReference;
+
+import jakarta.persistence.CascadeType;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.OneToMany;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
-import com.fasterxml.jackson.annotation.JsonManagedReference;
-import java.util.ArrayList;
-import java.util.List;
 
 @Entity
 @Data
@@ -24,7 +34,7 @@ public class Receta {
     private String descripcion;
 
     @Enumerated(EnumType.STRING)
-    @Column(length = 10)
+    @Column(nullable = false)
     private Macronutriente macronutriente;
 
     @OneToMany(mappedBy = "receta", cascade = CascadeType.ALL, orphanRemoval = true)
@@ -40,6 +50,11 @@ public class Receta {
         ir.setCantidad(cantidad);
         ingredientesReceta.add(ir);
     }
+
+    @OneToMany(mappedBy = "receta", cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonManagedReference(value = "receta-comidas")
+    @ToString.Exclude
+    private List<Comida> comidas = new ArrayList<>();
 
     // Eliminar ingrediente
     public void removeIngrediente(Ingrediente ingrediente) {

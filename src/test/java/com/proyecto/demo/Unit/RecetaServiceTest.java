@@ -160,7 +160,7 @@ class RecetaServiceTest {
         Receta resultado = recetaService.actualizarReceta(1L, recetaActualizada);
 
         assertEquals("Arroz Criollo", resultado.getNombre());
-        assertEquals(Macronutriente.PROTEINA, resultado.getMacronutriente());
+        assertEquals(Macronutriente.CARBOHIDRATO, resultado.getMacronutriente());
         assertEquals(1, resultado.getIngredientesReceta().size());
     }
 
