@@ -1,41 +1,34 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms';
+import { RouterLink } from '@angular/router';
 import { RecetaService, Receta } from '../../../core/services/receta.service';
 
 @Component({
-  selector: 'app-recetas-list',
-  standalone: true,
-  imports: [CommonModule],
-  template: `
-    <section style="padding: 16px;">
-      <h1 style="font-size: 1.25rem; font-weight: 600; margin-bottom: 12px;">Recetas</h1>
-      <p *ngIf="cargando" style="color:#666">Cargando...</p>
+  standalone:true, selector:'app-recetas-list',
+  imports:[CommonModule,FormsModule,RouterLink],
+  template:`
+  <h1 class="h1">Catálogo de Recetas</h1>
+  <input class="input" placeholder="Buscar..." [(ngModel)]="q" (input)="filtrar()">
 
-      <ng-container *ngIf="!cargando">
-        <ng-container *ngIf="recetas.length > 0; else vacio">
-          <div style="display:grid; gap:12px; grid-template-columns:repeat(auto-fill,minmax(240px,1fr));">
-            <div *ngFor="let r of recetas" style="border:1px solid #eee; border-radius:14px; padding:12px; background:#fff; box-shadow:0 4px 10px rgba(0,0,0,.04)">
-              <div style="font-weight:700">{{ r.nombre || '(sin nombre)' }}</div>
-              <div style="font-size:.85rem; color:#555">{{ r.descripcion || 'Sin descripción' }}</div>
-              <div style="font-size:.75rem; color:#999; margin-top:.5rem">ID: {{ r.id }}</div>
-            </div>
-          </div>
-        </ng-container>
-        <ng-template #vacio><p style="color:#999">No hay recetas registradas.</p></ng-template>
-      </ng-container>
-    </section>
+  <div class="grid recetas" style="margin-top:12px">
+    <article class="card" *ngFor="let r of filtradas">
+      <div class="thumb" [style.background-image]="r.imagenUrl ? 'url('+r.imagenUrl+')' : ''"></div>
+      <div class="section">
+        <div class="h2" style="margin:0 0 6px">{{r.nombre}}</div>
+        <div class="muted small" style="min-height:34px">{{r.descripcion}}</div>
+        <div style="display:flex; gap:8px; margin-top:10px">
+          <a class="btn" [routerLink]="['/recetas', r.id]">Ver</a>
+          <a class="btn primary" [routerLink]="['/planner']">+ Plan</a>
+        </div>
+      </div>
+    </article>
+  </div>
   `
 })
-export class RecetasListComponent implements OnInit {
-  recetas: Receta[] = [];
-  cargando = true;
-
-  constructor(private recetaService: RecetaService) {}
-
-  ngOnInit(): void {
-    this.recetaService.listar().subscribe({
-      next: (data: Receta[]) => { this.recetas = data; this.cargando = false; },
-      error: (err: unknown) => { console.error('Error al cargar recetas:', err); this.cargando = false; }
-    });
-  }
+export class RecetasListComponent implements OnInit{
+  recetas:Receta[]=[]; filtradas:Receta[]=[]; q='';
+  constructor(private srv:RecetaService){}
+  ngOnInit(){ this.srv.listar().subscribe(x=>{this.recetas=x; this.filtradas=x;}); }
+  filtrar(){ const s=this.q.toLowerCase(); this.filtradas=!s?this.recetas:this.recetas.filter(r=>(r.nombre||'').toLowerCase().includes(s)); }
 }

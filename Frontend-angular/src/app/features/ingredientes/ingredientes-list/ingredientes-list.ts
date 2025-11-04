@@ -1,15 +1,33 @@
 import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms'; // ✅ AGREGA ESTO
 
 @Component({
-  selector: 'app-ingredientes-list',
   standalone: true,
-  imports: [CommonModule],
+  selector: 'app-ingredientes-list',
+  imports: [CommonModule, FormsModule], // ✅ AGREGA FormsModule AQUÍ
   template: `
-    <section>
-      <h1 style="font-size:1.25rem; font-weight:600; margin-bottom:12px;">Ingredientes</h1>
-      <p style="color:#666">Próximamente…</p>
-    </section>
+    <input
+      type="text"
+      placeholder="Buscar"
+      [(ngModel)]="q"
+      (input)="filtrar()"
+      class="input"
+    />
+    <ul>
+      <li *ngFor="let ing of ingredientesFiltrados">{{ ing }}</li>
+    </ul>
   `
 })
-export class IngredientesListComponent {}
+export class IngredientesListComponent {
+  q = '';
+  ingredientes = ['Arroz', 'Pasta', 'Pollo', 'Carne', 'Leche'];
+  ingredientesFiltrados = [...this.ingredientes];
+
+  filtrar() {
+    const query = this.q.toLowerCase();
+    this.ingredientesFiltrados = this.ingredientes.filter(i =>
+      i.toLowerCase().includes(query)
+    );
+  }
+}

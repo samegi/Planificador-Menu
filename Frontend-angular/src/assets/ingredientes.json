@@ -1,0 +1,5 @@
+[
+  {"id":101,"nombre":"Arroz","cantidad":"2 tazas","img":"assets/img/ing-arroz.jpg"},
+  {"id":102,"nombre":"Pechugas de pollo","cantidad":"2","img":"assets/img/ing-pollo.jpg"},
+  {"id":103,"nombre":"Cebolla cabezona","cantidad":"1 picada","img":"assets/img/ing-cebolla.jpg"}
+]
