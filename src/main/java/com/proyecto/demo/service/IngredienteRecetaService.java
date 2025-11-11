@@ -86,41 +86,37 @@ public class IngredienteRecetaService {
     }
 
 
- public void generarListaDeComprasPorRecetas(List<Long> idsRecetas) {
-        // Mapa para acumular cantidades por ingrediente
-        Map<String, Float> listaCompras = new HashMap<>();
+ public void generarListaDeComprasPorRecetas() {
+    //  Obtener todas las relaciones receta–ingrediente
+    List<IngredienteReceta> relaciones = ingredienteRecetaRepository.findAll();
 
-        // Iterar por cada receta seleccionada
-        for (Long idReceta : idsRecetas) {
-            Receta receta = recetaRepository.findById(idReceta)
-                    .orElseThrow(() -> new EntityNotFoundException("Receta no encontrada con ID: " + idReceta));
+    //  Usar un Map para acumular cantidades por ingrediente
+    Map<String, Double> listaCompras = new HashMap<>();
 
-            List<IngredienteReceta> ingredientesDeReceta = ingredienteRecetaRepository.findByRecetaId(idReceta);
+    for (IngredienteReceta relacion : relaciones) {
+        String nombreIngrediente = relacion.getIngrediente().getNombre();
+        double cantidad = relacion.getCantidad();
 
-            for (IngredienteReceta ir : ingredientesDeReceta) {
-                String nombreIngrediente = ir.getIngrediente().getNombre();
-                Float cantidad = ir.getCantidad();
-
-                // Si el ingrediente ya está en el mapa, sumar cantidades
-                listaCompras.put(nombreIngrediente, listaCompras.getOrDefault(nombreIngrediente, 0f) + cantidad);
-            }
-        }
-
-        // Escribir la lista consolidada en un archivo
-        String rutaArchivo = "lista_compras.txt";
-
-        try (BufferedWriter writer = new BufferedWriter(new FileWriter(rutaArchivo))) {
-            writer.write("=== LISTA DE COMPRAS POR RECETAS ===\n\n");
-
-            for (Map.Entry<String, Float> entrada : listaCompras.entrySet()) {
-                writer.write("- " + entrada.getKey() + ": " + entrada.getValue() + "\n");
-            }
-
-            writer.write("\nTotal ingredientes distintos: " + listaCompras.size());
-            System.out.println(" Archivo generado correctamente en: " + rutaArchivo);
-
-        } catch (IOException e) {
-            System.err.println(" Error al generar la lista de compras: " + e.getMessage());
-        }
+        // Sumar si el ingrediente ya existe
+        listaCompras.put(nombreIngrediente,
+                listaCompras.getOrDefault(nombreIngrediente, 0.0) + cantidad);
     }
+
+    // Crear el archivo de texto
+    String rutaArchivo = "lista_compras.txt";
+
+    try (BufferedWriter writer = new BufferedWriter(new FileWriter(rutaArchivo))) {
+        writer.write("=== LISTA DE COMPRAS POR RECETAS ===\n\n");
+
+        for (Map.Entry<String, Double> entrada : listaCompras.entrySet()) {
+            writer.write("- " + entrada.getKey() + ": " + entrada.getValue() + "\n");
+        }
+
+        writer.write("\nTotal ingredientes distintos: " + listaCompras.size());
+        System.out.println(" Archivo generado correctamente en: " + rutaArchivo);
+
+    } catch (IOException e) {
+        System.err.println("Error al generar la lista de compras: " + e.getMessage());
+    }
+}
 }
