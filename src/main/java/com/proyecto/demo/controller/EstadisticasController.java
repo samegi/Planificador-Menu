@@ -19,9 +19,9 @@ public class EstadisticasController {
         this.service = service;
     }
 
-    /** Resumen completo (topN configurable, default 5) */
+    /** Resumen completo (top 3) */
     @GetMapping("/resumen")
-    public EstadisticasResumen resumen(@RequestParam(defaultValue = "5") int topN) {
+    public EstadisticasResumen resumen(@RequestParam(defaultValue = "3") int topN) {
         return service.resumen(topN);
     }
 
@@ -31,16 +31,28 @@ public class EstadisticasController {
         return service.recetasPorMacronutriente();
     }
 
-    /** Top N ingredientes más usados */
-    @GetMapping("/top-ingredientes")
-    public List<ItemConteo> topIngredientes(@RequestParam(defaultValue = "5") int n) {
-        return service.ingredientesMasUsados(n);
+    /** Top 3 ingredientes más versátiles (aparecen en más recetas) */
+    @GetMapping("/top-ingredientes-versatiles")
+    public List<ItemConteo> topIngredientesVersatiles(@RequestParam(defaultValue = "3") int n) {
+        return service.ingredientesMasVersatiles(n);
     }
 
-    /** Top N recetas con más ingredientes */
+    /** Alias por compatibilidad con lo previo (opcional) */
+    @GetMapping("/top-ingredientes")
+    public List<ItemConteo> topIngredientes(@RequestParam(defaultValue = "3") int n) {
+        return service.ingredientesMasVersatiles(n);
+    }
+
+    /** Top 3 recetas con más ingredientes distintos */
     @GetMapping("/recetas-mas-ingredientes")
-    public List<ItemConteo> recetasMasIngredientes(@RequestParam(defaultValue = "5") int n) {
+    public List<ItemConteo> recetasMasIngredientes(@RequestParam(defaultValue = "3") int n) {
         return service.recetasConMasIngredientes(n);
+    }
+
+    /** Top 3 recetas más consumidas (según tabla 'comida') */
+    @GetMapping("/recetas-mas-consumidas")
+    public List<ItemConteo> recetasMasConsumidas(@RequestParam(defaultValue = "3") int n) {
+        return service.recetasMasConsumidas(n);
     }
 
     /** Comidas por día como serie temporal */
