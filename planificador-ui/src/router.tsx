@@ -1,4 +1,6 @@
 // src/router.tsx
+import StatsMacronutrientes from "./pages/statsMacro/StatsMacronutrientes";
+
 import { createBrowserRouter } from 'react-router-dom';
 import AppLayout from './components/AppLayout';
 
@@ -26,6 +28,7 @@ export const router = createBrowserRouter([
       { path: '/recetas/:id', element: <RecetaItem /> },
 
       { path: '/estadisticas', element: <Estadisticas /> },
+      { path: "/estadisticas/macronutrientes", element: <StatsMacronutrientes /> },
     ],
   },
 ]);
