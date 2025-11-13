@@ -40,13 +40,13 @@ public class Receta {
 
     // Relación con IngredienteReceta (se mantiene como estaba)
     @OneToMany(mappedBy = "receta", cascade = CascadeType.ALL, orphanRemoval = true)
-    @JsonManagedReference
+    @JsonManagedReference        // lado "padre" de la relación Receta - IngredienteReceta
     @ToString.Exclude
     private List<IngredienteReceta> ingredientesReceta = new ArrayList<>();
 
-    // Relación con Comida: aquí solo necesitamos evitar ciclo, no mandarlas
+    // Relación con Comida: NO la mandamos en el JSON para evitar ciclos
     @OneToMany(mappedBy = "receta", cascade = CascadeType.ALL, orphanRemoval = true)
-    @JsonIgnore                     // 👈 así no se serializa comidas dentro de Receta
+    @JsonIgnore                  // <- evita Receta -> comidas -> receta -> ...
     @ToString.Exclude
     private List<Comida> comidas = new ArrayList<>();
 

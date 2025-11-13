@@ -1,5 +1,6 @@
 package com.proyecto.demo.controller;
 
+import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.List;
 
@@ -30,10 +31,17 @@ public class DiaController {
         this.diaService = diaService;
     }
 
-    // ---- CRUD DIA ----
+    // ---------- CRUD DIA ----------
+
+    // ✅ AHORA sí coincide con tu front:
+    // POST /api/dias?fecha=YYYY-MM-DD
     @PostMapping
-    public ResponseEntity<Dia> crearDia(@RequestBody Dia dia) {
-        return ResponseEntity.ok(diaService.crearDia(dia));
+    public ResponseEntity<Dia> crearDia(@RequestParam("fecha") String fecha) {
+        LocalDate f = LocalDate.parse(fecha);   // "2025-11-13"
+        Dia dia = new Dia();
+        dia.setFecha(f);
+        Dia creado = diaService.crearDia(dia);
+        return ResponseEntity.ok(creado);
     }
 
     @GetMapping
@@ -57,12 +65,13 @@ public class DiaController {
         return ResponseEntity.noContent().build();
     }
 
-    // ---- Opcionales para gestionar comidas del día ----
+    // ---------- COMIDAS DEL DÍA ----------
+
     @PostMapping("/{diaId}/comidas")
     public ResponseEntity<Comida> agregarComidaADia(
             @PathVariable Long diaId,
             @RequestParam Long recetaId,
-            @RequestParam String hora // formato "HH:mm"
+            @RequestParam String hora // "HH:mm"
     ) {
         LocalTime t = LocalTime.parse(hora);
         return ResponseEntity.ok(diaService.agregarComidaADia(diaId, recetaId, t));

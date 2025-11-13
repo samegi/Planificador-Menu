@@ -2,7 +2,7 @@ package com.proyecto.demo.model;
 
 import java.time.LocalTime;
 
-import com.fasterxml.jackson.annotation.JsonBackReference; // 👈 solo para la relación con Dia
+import com.fasterxml.jackson.annotation.JsonBackReference;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -31,13 +31,13 @@ public class Comida {
     // Día al que pertenece esta comida
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "dia_id")
-    @JsonBackReference(value = "dia-comidas") // 👈 ESTO SÍ se queda
+    @JsonBackReference(value = "dia-comidas")   // evita bucle Dia -> comidas -> dia
     @ToString.Exclude
     private Dia dia;
 
-    // Receta asociada
+    // Receta asociada: se serializa COMPLETA (id, nombre, etc.)
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "receta_id", nullable = false)
     @ToString.Exclude
-    private Receta receta;  // 👈 SIN JsonBackReference, SIN JsonIgnoreProperties
+    private Receta receta;
 }
