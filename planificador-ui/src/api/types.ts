@@ -5,17 +5,20 @@ export interface Receta {
   id: Id;
   nombre: string;
   descripcion?: string;
+  macronutriente?: string;
 }
 
 export interface Comida {
   id: Id;
-  hora: string;            // "HH:mm"
+  hora: string;
   receta?: Receta;
-  recetaNombre?: string;   // opcional si tu back lo manda así
+  nombreReceta?: string;  // 👈 coincide con el JSON
+  recetaId?: number;
 }
+
 
 export interface Dia {
   id: Id;
-  fecha: string;           // "YYYY-MM-DD"
+  fecha: string;         // "YYYY-MM-DD"
   comidas?: Comida[];
 }

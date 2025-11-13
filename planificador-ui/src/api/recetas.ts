@@ -15,6 +15,7 @@ export function getReceta(id: number): Promise<Receta> {
 export type RecetaPayload = {
   nombre: string;
   descripcion?: string;
+  macronutriente?: string; // opcional si quieres manejarlo
 };
 
 export const RecetasApi = {
@@ -26,22 +27,40 @@ export const RecetasApi = {
     return getReceta(id);
   },
 
+  // POST /recetas?nombre=...&descripcion=...&macronutriente=...
   crear(data: RecetaPayload): Promise<Receta> {
-    return http<Receta>(`${BASE}/recetas`, {
+    const params = new URLSearchParams();
+    params.append('nombre', data.nombre);
+    if (data.descripcion) {
+      params.append('descripcion', data.descripcion);
+    }
+    if (data.macronutriente) {
+      params.append('macronutriente', data.macronutriente);
+    }
+
+    return http<Receta>(`${BASE}/recetas?${params.toString()}`, {
       method: 'POST',
-      body: JSON.stringify(data),
     });
   },
 
+  // PUT /recetas/{id}?nombre=...&descripcion=...&macronutriente=...
   actualizar(id: number, data: RecetaPayload): Promise<Receta> {
-    return http<Receta>(`${BASE}/recetas/${id}`, {
+    const params = new URLSearchParams();
+    params.append('nombre', data.nombre);
+    if (data.descripcion) {
+      params.append('descripcion', data.descripcion);
+    }
+    if (data.macronutriente) {
+      params.append('macronutriente', data.macronutriente);
+    }
+
+    return http<Receta>(`${BASE}/recetas/${id}?${params.toString()}`, {
       method: 'PUT',
-      body: JSON.stringify(data),
     });
   },
 
   async eliminar(id: number): Promise<void> {
-    // Ojo: muchos DELETE devuelven 204 sin cuerpo → mejor NO usar http<T>
+    // DELETE suele devolver 204 sin cuerpo, mejor no usar http<T> aquí
     const res = await fetch(`${BASE}/recetas/${id}`, {
       method: 'DELETE',
     });

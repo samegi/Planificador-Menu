@@ -75,8 +75,16 @@ export default function DiaPage() {
 
   const empezarEditar = (c: Comida) => {
     setEditId(c.id);
-    const rid = (c as any).receta?.id ?? '';
+
+    // tomar id de la receta desde donde venga
+    const rid =
+      (c as any).receta?.id ??
+      (c as any).recetaId ??
+      (c as any).receta_id ??
+      '';
+
     setEditRecetaId(String(rid));
+
     const hhmm = (c.hora || '12:00').slice(0, 5);
     setEditHora(hhmm);
   };
@@ -128,8 +136,23 @@ export default function DiaPage() {
         <h3 className="font-semibold">Comidas del día</h3>
         <ul className="space-y-2">
           {comidas.map((c) => {
-            const nombreReceta =
-              (c as any).receta?.nombre ?? '—';
+            // de dónde saco el id de receta
+            const recetaId =
+              (c as any).receta?.id ??
+              (c as any).recetaId ??
+              (c as any).receta_id ??
+              null;
+
+            // prioridad: objeto receta -> nombre directo -> buscar en lista
+           const nombreReceta =
+  (c as any).receta?.nombre ??
+  (c as any).nombreReceta ??   // 👈 usar el nombre correcto
+  (recetaId != null
+    ? recetas.find((r) => r.id === recetaId)?.nombre
+    : undefined) ??
+  '—';
+
+
             const enEdicion = editId === c.id;
 
             return (
@@ -140,7 +163,7 @@ export default function DiaPage() {
                 <div>
                   <div className="font-medium">{nombreReceta}</div>
                   <div className="text-sm opacity-70">
-                    Hora: {c.hora || '—'}
+                    Hora: {(c.hora || '—').slice(0, 5)}
                   </div>
                 </div>
 
@@ -165,13 +188,9 @@ export default function DiaPage() {
                       <select
                         className="border rounded p-2 flex-1"
                         value={editRecetaId}
-                        onChange={(e) =>
-                          setEditRecetaId(e.target.value)
-                        }
+                        onChange={(e) => setEditRecetaId(e.target.value)}
                       >
-                        <option value="">
-                          Selecciona receta…
-                        </option>
+                        <option value="">Selecciona receta…</option>
                         {recetas.map((r) => (
                           <option key={r.id} value={r.id}>
                             {r.nombre}
@@ -182,9 +201,7 @@ export default function DiaPage() {
                         type="time"
                         className="border rounded p-2"
                         value={editHora}
-                        onChange={(e) =>
-                          setEditHora(e.target.value)
-                        }
+                        onChange={(e) => setEditHora(e.target.value)}
                       />
                     </div>
                     <div className="flex gap-2">

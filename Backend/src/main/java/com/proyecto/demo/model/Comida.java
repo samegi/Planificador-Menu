@@ -2,7 +2,7 @@ package com.proyecto.demo.model;
 
 import java.time.LocalTime;
 
-import com.fasterxml.jackson.annotation.JsonBackReference;   // <-- OK
+import com.fasterxml.jackson.annotation.JsonBackReference; // 👈 solo para la relación con Dia
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -29,17 +29,15 @@ public class Comida {
     private LocalTime hora;
 
     // Día al que pertenece esta comida
-@ManyToOne(fetch = FetchType.LAZY)
-@JoinColumn(name = "dia_id")
-@JsonBackReference(value = "dia-comidas")
-@ToString.Exclude
-private Dia dia;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "dia_id")
+    @JsonBackReference(value = "dia-comidas") // 👈 ESTO SÍ se queda
+    @ToString.Exclude
+    private Dia dia;
 
-// Relación muchos a uno con Receta
-@ManyToOne(fetch = FetchType.LAZY)
-@JoinColumn(name = "receta_id", nullable = false)
-@JsonBackReference(value = "receta-comidas")
-@ToString.Exclude
-private Receta receta;
-
+    // Receta asociada
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "receta_id", nullable = false)
+    @ToString.Exclude
+    private Receta receta;  // 👈 SIN JsonBackReference, SIN JsonIgnoreProperties
 }
