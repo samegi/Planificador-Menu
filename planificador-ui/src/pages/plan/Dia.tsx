@@ -77,13 +77,13 @@ export default function DiaPage() {
     setEditId(c.id);
 
     // tomar id de la receta desde donde venga
-    const rid =
+    const ridRaw =
       (c as any).receta?.id ??
       (c as any).recetaId ??
       (c as any).receta_id ??
       '';
 
-    setEditRecetaId(String(rid));
+    setEditRecetaId(ridRaw ? String(ridRaw) : '');
 
     const hhmm = (c.hora || '12:00').slice(0, 5);
     setEditHora(hhmm);
@@ -136,22 +136,26 @@ export default function DiaPage() {
         <h3 className="font-semibold">Comidas del día</h3>
         <ul className="space-y-2">
           {comidas.map((c) => {
-            // de dónde saco el id de receta
-            const recetaId =
+            // intentar obtener el id de receta desde varias formas
+            const recetaIdRaw =
               (c as any).receta?.id ??
               (c as any).recetaId ??
               (c as any).receta_id ??
               null;
+// intentar obtener id real de la receta
+const recetaIdNum =
+  (c as any).receta?.id ??
+  (c as any).recetaId ??
+  null;
 
-            // prioridad: objeto receta -> nombre directo -> buscar en lista
-           const nombreReceta =
-  (c as any).receta?.nombre ??
-  (c as any).nombreReceta ??   // 👈 usar el nombre correcto
-  (recetaId != null
-    ? recetas.find((r) => r.id === recetaId)?.nombre
-    : undefined) ??
+// nombre correcto de receta SEGÚN TU BACKEND
+const nombreReceta =
+  c.receta?.nombre ??
+  (recetaIdNum ? recetas.find(r => r.id === recetaIdNum)?.nombre : undefined) ??
   '—';
 
+          
+            
 
             const enEdicion = editId === c.id;
 

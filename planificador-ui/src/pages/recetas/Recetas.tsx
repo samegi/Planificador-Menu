@@ -9,37 +9,60 @@ export default function RecetasPage() {
   const [q, setQ] = useState('');
   const nav = useNavigate();
 
-  const load = () => RecetasApi.listar().then(setLista);
-
-  useEffect(() => {
-    load().catch((err) => {
-      console.error('[RecetasPage] Error cargando recetas', err);
-      alert('No se pudieron cargar las recetas. Mira la consola.');
-    });
-  }, []);
-
-  const crear = async () => {
-    const nombre = prompt('Nombre de la receta');
-    if (!nombre) return;
+  // ======================
+  // CARGAR RECETAS
+  // ======================
+  const load = async () => {
     try {
-      const r = await RecetasApi.crear({ nombre, descripcion: '' });
-      await load();
-      nav(`/recetas/${r.id}`);
+      const rs = await RecetasApi.listar();
+      setLista(rs);
     } catch (err) {
-      console.error('[RecetasPage] Error creando receta', err);
-      alert('No se pudo crear la receta. Mira la consola.');
+      console.error('[RecetasPage] Error cargando recetas', err);
+      alert('No se pudieron cargar las recetas.');
     }
   };
 
+  useEffect(() => {
+    load();
+  }, []);
+
+  // ======================
+  // CREAR NUEVA RECETA
+  // ======================
+  const crear = async () => {
+    const nombre = prompt('Nombre de la receta:');
+    if (!nombre) return;
+
+    try {
+      const nueva = await RecetasApi.crear({
+        nombre,
+        descripcion: '',
+      });
+
+      await load();
+      nav(`/recetas/${nueva.id}`);
+    } catch (err) {
+      console.error('[RecetasPage] Error creando receta', err);
+      alert('No se pudo crear la receta.');
+    }
+  };
+
+  // ======================
+  // FILTRAR RECETAS
+  // ======================
   const filtrada =
     q.trim() === ''
       ? lista
       : lista.filter((r) =>
-          r.nombre.toLowerCase().includes(q.toLowerCase()),
+          r.nombre.toLowerCase().includes(q.toLowerCase())
         );
 
+  // ======================
+  // RENDER
+  // ======================
   return (
     <div className="p-4 space-y-4">
+      {/* Buscador + botón crear */}
       <div className="flex gap-2">
         <input
           value={q}
@@ -55,6 +78,7 @@ export default function RecetasPage() {
         </button>
       </div>
 
+      {/* Lista de recetas */}
       <ul className="grid gap-3">
         {filtrada.map((r) => (
           <li
