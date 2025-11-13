@@ -5,6 +5,7 @@ import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;   // 👈 IMPORTANTE
 
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
@@ -22,6 +23,8 @@ import lombok.ToString;
 @Entity
 @Data
 @NoArgsConstructor
+// 👇 ESTA LÍNEA ES LA CLAVE
+@JsonIgnoreProperties({ "hibernateLazyInitializer", "handler" })
 public class Receta {
 
     @Id
@@ -38,15 +41,15 @@ public class Receta {
     @Column(nullable = false)
     private Macronutriente macronutriente;
 
-    // Relación con IngredienteReceta (se mantiene como estaba)
+    // Relación con IngredienteReceta
     @OneToMany(mappedBy = "receta", cascade = CascadeType.ALL, orphanRemoval = true)
-    @JsonManagedReference        // lado "padre" de la relación Receta - IngredienteReceta
+    @JsonManagedReference
     @ToString.Exclude
     private List<IngredienteReceta> ingredientesReceta = new ArrayList<>();
 
-    // Relación con Comida: NO la mandamos en el JSON para evitar ciclos
+    // Relación con Comida: no la mandamos para evitar ciclo
     @OneToMany(mappedBy = "receta", cascade = CascadeType.ALL, orphanRemoval = true)
-    @JsonIgnore                  // <- evita Receta -> comidas -> receta -> ...
+    @JsonIgnore
     @ToString.Exclude
     private List<Comida> comidas = new ArrayList<>();
 

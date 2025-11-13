@@ -81,4 +81,17 @@ public class DiaController {
     public ResponseEntity<List<Comida>> listarComidasDeDia(@PathVariable Long diaId) {
         return ResponseEntity.ok(diaService.listarComidasDeDia(diaId));
     }
+
+    // DiaController.java
+
+@PostMapping("/crear")
+public ResponseEntity<Dia> crearDiaPorFecha(
+        @RequestParam("fecha") @org.springframework.format.annotation.DateTimeFormat(iso = org.springframework.format.annotation.DateTimeFormat.ISO.DATE)
+        java.time.LocalDate fecha
+) {
+    Dia dia = new Dia();
+    dia.setFecha(fecha);
+    return ResponseEntity.ok(diaService.crearDia(dia));
+}
+
 }

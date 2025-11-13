@@ -1,3 +1,4 @@
+// src/router.tsx
 import { createBrowserRouter } from 'react-router-dom';
 import AppLayout from './components/AppLayout';
 
@@ -15,8 +16,15 @@ export const router = createBrowserRouter([
       { path: '/', element: <Home /> },
       { path: '/plan', element: <Plan /> },
       { path: '/plan/:id', element: <DiaPage /> },
+
       { path: '/recetas', element: <Recetas /> },
+
+      // 👉 importantísimo: ruta para crear
+      { path: '/recetas/nueva', element: <RecetaItem /> },
+
+      // 👉 y luego la de editar/ver por id
       { path: '/recetas/:id', element: <RecetaItem /> },
+
       { path: '/estadisticas', element: <Estadisticas /> },
     ],
   },

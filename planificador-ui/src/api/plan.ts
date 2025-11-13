@@ -2,7 +2,6 @@
 import { BASE, http } from './http';
 import type { Dia, Comida } from './types';
 
-// Tipos para las operaciones de comida
 export type AddComidaPayload = {
   diaId: number;
   recetaId: number;
@@ -15,60 +14,40 @@ export type UpdateComidaPayload = {
 };
 
 export const PlanApi = {
-  // =======================
-  // DÍAS
-  // =======================
-
-  // GET /api/dias
+  // ----- DÍAS -----
   dias(): Promise<Dia[]> {
     return http<Dia[]>(`${BASE}/dias`);
   },
 
-  // GET /api/dias/{id}
   getDia(id: number): Promise<Dia> {
     return http<Dia>(`${BASE}/dias/${id}`);
   },
 
-  // POST /api/dias
-  // El backend espera @RequestBody Dia -> JSON: { "fecha": "YYYY-MM-DD" }
-  createDia(fechaYmd: string): Promise<Dia> {
-    const body = JSON.stringify({ fecha: fechaYmd });
-
-    return http<Dia>(`${BASE}/dias`, {
+  // POST /api/dias  body: { "fecha": "YYYY-MM-DD" }
+   createDia(fechaYmd: string): Promise<Dia> {
+    return http<Dia>(`${BASE}/dias/crear?fecha=${fechaYmd}`, {
       method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body,
     });
   },
 
-  // =======================
-  // COMIDAS
-  // =======================
-
-  // GET /api/dias/{diaId}/comidas
+  // ----- COMIDAS -----
   getComidas(diaId: number): Promise<Comida[]> {
     return http<Comida[]>(`${BASE}/dias/${diaId}/comidas`);
   },
 
   // POST /api/dias/{diaId}/comidas?recetaId=..&hora=..
-  // (coincide con tu DiaController)
   addComida(payload: AddComidaPayload): Promise<Comida> {
     const params = new URLSearchParams({
       recetaId: String(payload.recetaId),
       hora: payload.hora,
     });
 
-    const url = `${BASE}/dias/${payload.diaId}/comidas?${params.toString()}`;
-    return http<Comida>(url, {
+    return http<Comida>(`${BASE}/dias/${payload.diaId}/comidas?${params}`, {
       method: 'POST',
     });
   },
 
-  // PUT /api/comidas/{id}
-  // ComidaController.actualizarComida(@PathVariable id, @RequestBody Comida)
-  // -> JSON: { "hora": "HH:mm", "receta": { "id": X } }
+  // PUT /api/comidas/{id}  (body JSON)
   updateComida(id: number, payload: UpdateComidaPayload): Promise<Comida> {
     const body = JSON.stringify({
       hora: payload.hora,

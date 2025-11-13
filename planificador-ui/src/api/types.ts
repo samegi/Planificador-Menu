@@ -5,20 +5,24 @@ export interface Receta {
   id: Id;
   nombre: string;
   descripcion?: string;
-  macronutriente?: string;
+
+  // campos de texto que se ven en tu formulario
+  ingredientes?: string;
+  instrucciones?: string;
+
+  macronutriente?: string; // si lo usas
 }
 
 export interface Comida {
   id: Id;
   hora: string;
   receta?: Receta;
-  nombreReceta?: string;  // 👈 coincide con el JSON
+  nombreReceta?: string;
   recetaId?: number;
 }
 
-
 export interface Dia {
   id: Id;
-  fecha: string;         // "YYYY-MM-DD"
+  fecha: string;   // "YYYY-MM-DD"
   comidas?: Comida[];
 }

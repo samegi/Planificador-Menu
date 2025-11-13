@@ -1,98 +1,73 @@
 // src/pages/recetas/Recetas.tsx
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { RecetasApi } from '../../api/recetas';
 import type { Receta } from '../../api/types';
+import { RecetasApi } from '../../api/recetas';
 
-export default function RecetasPage() {
-  const [lista, setLista] = useState<Receta[]>([]);
-  const [q, setQ] = useState('');
-  const nav = useNavigate();
-
-  // ======================
-  // CARGAR RECETAS
-  // ======================
-  const load = async () => {
-    try {
-      const rs = await RecetasApi.listar();
-      setLista(rs);
-    } catch (err) {
-      console.error('[RecetasPage] Error cargando recetas', err);
-      alert('No se pudieron cargar las recetas.');
-    }
-  };
+function Recetas() {
+  const [recetas, setRecetas] = useState<Receta[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [busqueda, setBusqueda] = useState('');
+  const navigate = useNavigate();
 
   useEffect(() => {
-    load();
+    (async () => {
+      try {
+        const data = await RecetasApi.listar();
+        setRecetas(data);
+      } catch (err) {
+        console.error('[RecetasPage] Error cargando recetas', err);
+        alert('Error cargando recetas.');
+      } finally {
+        setLoading(false);
+      }
+    })();
   }, []);
 
-  // ======================
-  // CREAR NUEVA RECETA
-  // ======================
-  const crear = async () => {
-    const nombre = prompt('Nombre de la receta:');
-    if (!nombre) return;
+  const filtradas = recetas.filter((r) =>
+    r.nombre.toLowerCase().includes(busqueda.toLowerCase())
+  );
 
-    try {
-      const nueva = await RecetasApi.crear({
-        nombre,
-        descripcion: '',
-      });
-
-      await load();
-      nav(`/recetas/${nueva.id}`);
-    } catch (err) {
-      console.error('[RecetasPage] Error creando receta', err);
-      alert('No se pudo crear la receta.');
-    }
-  };
-
-  // ======================
-  // FILTRAR RECETAS
-  // ======================
-  const filtrada =
-    q.trim() === ''
-      ? lista
-      : lista.filter((r) =>
-          r.nombre.toLowerCase().includes(q.toLowerCase())
-        );
-
-  // ======================
-  // RENDER
-  // ======================
   return (
-    <div className="p-4 space-y-4">
-      {/* Buscador + botón crear */}
-      <div className="flex gap-2">
-        <input
-          value={q}
-          onChange={(e) => setQ(e.target.value)}
-          placeholder="Buscar receta…"
-          className="border rounded px-3 py-2 flex-1"
-        />
+    <div className="page">
+      <div className="page-header">
+        <h1>Recetas</h1>
         <button
-          onClick={crear}
-          className="px-4 py-2 rounded bg-purple-600 text-white"
+          className="primary"
+          onClick={() => navigate('/recetas/nueva')}
         >
-          Nueva
+          Nueva receta
         </button>
       </div>
 
-      {/* Lista de recetas */}
-      <ul className="grid gap-3">
-        {filtrada.map((r) => (
-          <li
-            key={r.id}
-            onClick={() => nav(`/recetas/${r.id}`)}
-            className="p-3 rounded border hover:bg-purple-50 cursor-pointer"
-          >
-            <div className="font-semibold">{r.nombre}</div>
-            <div className="text-sm text-gray-600">
-              {r.descripcion || '—'}
-            </div>
-          </li>
-        ))}
-      </ul>
+      <input
+        placeholder="Buscar receta…"
+        value={busqueda}
+        onChange={(e) => setBusqueda(e.target.value)}
+        style={{ marginBottom: 16, width: '100%' }}
+      />
+
+      {loading ? (
+        <p>Cargando…</p>
+      ) : (
+        <ul className="list">
+          {filtradas.map((r) => (
+            <li
+              key={r.id}
+              className="card clickable"
+              onClick={() => navigate(`/recetas/${r.id}`)}
+            >
+              <div className="title">{r.nombre}</div>
+              {r.descripcion && (
+                <p className="muted">{r.descripcion}</p>
+              )}
+            </li>
+          ))}
+          {filtradas.length === 0 && <p>No hay recetas.</p>}
+        </ul>
+      )}
     </div>
   );
 }
+
+export default Recetas;
