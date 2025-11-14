@@ -19,9 +19,14 @@ export const RecetasApi = {
   crear(data: RecetaPayload): Promise<Receta> {
     const params = new URLSearchParams();
     params.append('nombre', data.nombre);
-    if (data.descripcion) {
-      params.append('descripcion', data.descripcion);
+    if (data.descripcion && data.descripcion.trim() !== '') {
+      params.append('descripcion', data.descripcion.trim());
     }
+
+    // 👇 AÑADIMOS SIEMPRE ALGÚN MACRONUTRIENTE
+    // OJO: pon aquí exactamente uno de los nombres de tu enum:
+    // por ejemplo: PROTEINA, CARBOHIDRATO, GRASA…
+    params.append('macronutriente', 'CARBOHIDRATO');
 
     return http<Receta>(`${BASE}/recetas?${params.toString()}`, {
       method: 'POST',
@@ -31,9 +36,12 @@ export const RecetasApi = {
   actualizar(id: number, data: RecetaPayload): Promise<Receta> {
     const params = new URLSearchParams();
     params.append('nombre', data.nombre);
-    if (data.descripcion) {
-      params.append('descripcion', data.descripcion);
+    if (data.descripcion && data.descripcion.trim() !== '') {
+      params.append('descripcion', data.descripcion.trim());
     }
+
+    // 👇 Igual para actualizar
+    params.append('macronutriente', 'CARBOHIDRATO');
 
     return http<Receta>(`${BASE}/recetas/${id}?${params.toString()}`, {
       method: 'PUT',

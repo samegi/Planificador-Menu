@@ -1,3 +1,4 @@
+// src/pages/recetas/RecetaItem.tsx
 import { useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { RecetasApi } from '../../api/recetas';
@@ -15,13 +16,23 @@ export default function RecetaItem() {
     descripcion: '',
   });
 
+  const [loading, setLoading] = useState(!isNew);
+  const [saving, setSaving] = useState(false);
+
   // Cargar receta cuando NO es nueva
   useEffect(() => {
     if (!isNew) {
-      RecetasApi.obtener(recetaId).then(setReceta).catch((err) => {
-        console.error('[RecetaItem] Error cargando receta', err);
-        alert('Error cargando la receta.');
-      });
+      (async () => {
+        try {
+          const data = await RecetasApi.obtener(recetaId);
+          setReceta(data);
+        } catch (err) {
+          console.error('[RecetaItem] Error cargando receta', err);
+          alert('Error cargando la receta.');
+        } finally {
+          setLoading(false);
+        }
+      })();
     }
   }, [isNew, recetaId]);
 
@@ -32,11 +43,13 @@ export default function RecetaItem() {
       return;
     }
 
+    const payload = {
+      nombre: receta.nombre,
+      descripcion: receta.descripcion ?? '',
+    };
+
     try {
-      const payload = {
-        nombre: receta.nombre,
-        descripcion: receta.descripcion ?? '',
-      };
+      setSaving(true);
 
       if (isNew) {
         await RecetasApi.crear(payload);
@@ -49,20 +62,51 @@ export default function RecetaItem() {
     } catch (err) {
       console.error('[RecetaItem] Error guardando receta', err);
       alert('No se pudo guardar la receta. Mira la consola.');
+    } finally {
+      setSaving(false);
     }
   }
 
+  async function eliminar() {
+    if (isNew) return;
+
+    const ok = confirm('¿Seguro que quieres eliminar esta receta?');
+    if (!ok) return;
+
+    try {
+      await RecetasApi.eliminar(recetaId);
+      alert('Receta eliminada');
+      navigate('/recetas');
+    } catch (err) {
+      console.error('[RecetaItem] Error eliminando receta', err);
+      alert('No se pudo eliminar la receta.');
+    }
+  }
+
+  if (loading) {
+    return (
+      <div className="page">
+        <div className="page-header">
+          <button onClick={() => navigate('/recetas')}>&larr; Volver</button>
+          <h1>Cargando receta…</h1>
+          <div />
+        </div>
+      </div>
+    );
+  }
+
   return (
-    <div className="p-4 max-w-3xl mx-auto">
-      <button onClick={() => navigate('/recetas')}>&larr; Volver a recetas</button>
+    <div className="page">
+      <div className="page-header">
+        <button onClick={() => navigate('/recetas')} className="secondary">
+          &larr; Volver
+        </button>
+        <h1>{isNew ? 'Nueva receta' : 'Editar receta'}</h1>
+        <div />
+      </div>
 
-      <h2 className="text-2xl font-bold mt-4">
-        {isNew ? 'Nueva receta' : 'Editar receta'}
-      </h2>
-
-      <div className="mt-6 space-y-4">
-        {/* Nombre */}
-        <div>
+      <div className="card" style={{ maxWidth: 600, margin: '0 auto' }}>
+        <div className="field">
           <label>Nombre</label>
           <input
             type="text"
@@ -71,11 +115,11 @@ export default function RecetaItem() {
             onChange={(e) =>
               setReceta({ ...receta, nombre: e.target.value })
             }
+            placeholder="Ej: Ensalada de pollo"
           />
         </div>
 
-        {/* Descripción */}
-        <div>
+        <div className="field" style={{ marginTop: 16 }}>
           <label>Descripción</label>
           <textarea
             className="w-full border p-2 rounded"
@@ -84,15 +128,48 @@ export default function RecetaItem() {
             onChange={(e) =>
               setReceta({ ...receta, descripcion: e.target.value })
             }
+            placeholder="Descripción corta de la receta…"
           />
         </div>
 
-        <button
-          className="px-4 py-2 bg-blue-500 text-white rounded"
-          onClick={guardar}
+        <div
+          className="actions"
+          style={{
+            marginTop: 24,
+            display: 'flex',
+            justifyContent: 'space-between',
+            gap: 8,
+          }}
         >
-          Guardar
-        </button>
+          {!isNew && (
+            <button
+              type="button"
+              className="danger"
+              onClick={eliminar}
+            >
+              Eliminar
+            </button>
+          )}
+
+          <div style={{ marginLeft: 'auto' }}>
+            <button
+              type="button"
+              className="secondary"
+              onClick={() => navigate('/recetas')}
+              style={{ marginRight: 8 }}
+            >
+              Cancelar
+            </button>
+            <button
+              type="button"
+              className="primary"
+              onClick={guardar}
+              disabled={saving}
+            >
+              {saving ? 'Guardando…' : 'Guardar'}
+            </button>
+          </div>
+        </div>
       </div>
     </div>
   );

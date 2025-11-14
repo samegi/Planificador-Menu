@@ -63,7 +63,10 @@ function Recetas() {
               )}
             </li>
           ))}
-          {filtradas.length === 0 && <p>No hay recetas.</p>}
+
+          {!loading && filtradas.length === 0 && (
+            <p>No hay recetas.</p>
+          )}
         </ul>
       )}
     </div>
