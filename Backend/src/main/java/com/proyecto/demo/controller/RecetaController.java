@@ -4,6 +4,7 @@ import com.proyecto.demo.model.Receta;
 import com.proyecto.demo.service.RecetaService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import com.proyecto.demo.model.Macronutriente;
 
 import java.util.List;
 
@@ -19,17 +20,19 @@ public class RecetaController {
     }
 
     @PostMapping
-    public ResponseEntity<Receta> crearReceta(
-            @RequestParam String nombre,
-            @RequestParam(required = false) String descripcion
-    ) {
-        Receta r = new Receta();
-        r.setNombre(nombre);
-        r.setDescripcion(descripcion);
+   public ResponseEntity<Receta> crearReceta(
+        @RequestParam String nombre,
+        @RequestParam(required = false) String descripcion,
+        @RequestParam Macronutriente macronutriente   // 👈 NUEVO
+) {
+    Receta r = new Receta();
+    r.setNombre(nombre);
+    r.setDescripcion(descripcion);
+    r.setMacronutriente(macronutriente);             // 👈 CLAVE
 
-        Receta nueva = recetaService.crearReceta(r);
-        return ResponseEntity.ok(nueva);
-    }
+    Receta nueva = recetaService.crearReceta(r);
+    return ResponseEntity.ok(nueva);
+}
 
     @GetMapping
     public ResponseEntity<List<Receta>> listarRecetas() {
