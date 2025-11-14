@@ -1,0 +1,14 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* helpers */
+.btn {
+  @apply px-4 py-2 rounded-lg bg-brand-600 text-white hover:bg-brand-700 active:scale-[.98] transition;
+}
+.card {
+  @apply border rounded-xl p-4 bg-white shadow-sm;
+}
+.badge {
+  @apply text-xs px-2 py-0.5 rounded-full bg-brand-100 text-brand-700;
+}
