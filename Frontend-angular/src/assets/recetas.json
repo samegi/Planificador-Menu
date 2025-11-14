@@ -1,6 +1,0 @@
-[
-  {"id":1,"nombre":"Arroz con pollo","descripcion":"Clásico casero con verduras","imagenUrl":"assets/img/arroz-pollo.jpg"},
-  {"id":2,"nombre":"Ajiaco","descripcion":"Sopa con papa criolla","imagenUrl":"assets/img/ajiaco.jpg"},
-  {"id":3,"nombre":"Ensalada César","descripcion":"Lechuga romana y pollo","imagenUrl":"assets/img/cesar.jpg"},
-  {"id":4,"nombre":"Arepa con huevo","descripcion":"Crocrante y dorada","imagenUrl":"assets/img/arepa.jpg"}
-]
