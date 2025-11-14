@@ -34,7 +34,8 @@ INSERT INTO receta (nombre, descripcion, macronutriente) VALUES
 ('Ensalada de frutas', 'Varias frutas mezcladas', 'CARBOHIDRATO'),
 ('Aguacate relleno', 'Aguacate con pollo y queso', 'GRASA'),
 ('Huevos con queso y aguacate', 'Huevos, aguacate y queso', 'GRASA'),
-('Ensalada keto', 'Lechuga, aguacate y queso', 'GRASA');
+('Ensalada keto', 'Lechuga, aguacate y queso', 'GRASA'),
+('Ensalada cesar', 'Lechuga, aguacate y queso', 'GRASA');
 
 -- ============================
 -- INGREDIENTES
